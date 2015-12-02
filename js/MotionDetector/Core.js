@@ -20,6 +20,10 @@
 	 *
 	 */
 	App.Core = function() {
+        
+        var change = false;
+        
+        var threshold = 55;
 
 		var rendering = false;
 
@@ -64,7 +68,7 @@
 		 * @return void.
 		 *
 		 */
-		function render() {
+		function render2() {
 			oldImage = currentImage;
 			currentImage = webCam.captureImage(false);
 
@@ -90,6 +94,35 @@
 			bottomRight = [0,0]
 
 		}
+        
+        function render() {
+            oldImage = currentImage;
+            currentImage = webCam.captureImage(false);
+            
+            if (!oldImage || !currentImage) {
+                change = false;
+                $('.secondtext').addClass('invisible');
+                return;
+            }
+            
+            var vals = imageCompare.compare(currentImage, oldImage, width, height);
+            
+            console.log(vals.topLeft[0], vals.topLeft[1], vals.bottomRight[0], vals.bottomRight[1]);
+            
+            if (vals.bottomRight[0] > threshold || vals.bottomRight[1] > threshold) {
+                
+                change = true;
+                
+            } else {
+                change = false;
+            }
+            
+            if (change) {
+                $('.secondtext').removeClass('invisible');
+            } else {
+                $('.secondtext').addClass('invisible');
+            }
+        }
 
 		/*
 		 * The main rendering loop.
